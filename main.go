@@ -32,6 +32,33 @@ func main() {
 			}
 			return nil
 		},
+		Run: func(cmd *cobra.Command, args []string) {
+			// Start a spinner while fetching Nomis
+			stopChan := make(chan bool)
+			go spinner(stopChan)
+
+			// Get the list of Nomis
+			nomis, err := fetchNomis()
+
+			// Stop the spinner
+			close(stopChan)
+			fmt.Print("\r") // Clear the spinner line
+
+			if err != nil {
+				fmt.Println("Error fetching Nomis:", err)
+				os.Exit(1)
+			}
+
+			// Display the selectable menu
+			selectedNomi, err := selectableMenu(nomis)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			// Start chat with the selected Nomi
+			startChat(selectedNomi.Name)
+		},
 	}
 
 	// Allow overriding the API key via a flag
