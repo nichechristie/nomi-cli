@@ -1,2 +1,4 @@
 .env
 nomi-cli
+
+**/.claude/settings.local.json
