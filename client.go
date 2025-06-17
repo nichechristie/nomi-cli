@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 )
@@ -70,10 +71,17 @@ func (c *NomiClient) makeRequest(method, endpoint string, body interface{}, resu
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
+		var errorMessage string
+		if bodyBytes, err := io.ReadAll(resp.Body); err == nil && len(bodyBytes) > 0 {
+			errorMessage = fmt.Sprintf("Request to %s failed: %s", endpoint, string(bodyBytes))
+		} else {
+			errorMessage = fmt.Sprintf("Request to %s failed", endpoint)
+		}
+		
 		return &APIError{
 			Status:     resp.Status,
 			StatusCode: resp.StatusCode,
-			Message:    fmt.Sprintf("Request to %s failed", endpoint),
+			Message:    errorMessage,
 		}
 	}
 
