@@ -46,8 +46,11 @@ func TestFindNomiByName(t *testing.T) {
 	apiKey = "test-api-key"
 	baseURL = server.URL
 
+	// Initialize the client for testing
+	client = NewNomiClient(apiKey, baseURL)
+
 	// Test finding existing Nomi
-	uuid, err := findNomiByName("John")
+	uuid, err := client.FindNomiByName("John")
 	if err != nil {
 		t.Errorf("Expected no error, got %v", err)
 	}
@@ -55,8 +58,17 @@ func TestFindNomiByName(t *testing.T) {
 		t.Errorf("Expected UUID test-uuid-1, got %s", uuid)
 	}
 
+	// Test case-insensitive matching
+	uuid, err = client.FindNomiByName("JOHN")
+	if err != nil {
+		t.Errorf("Expected no error for case-insensitive match, got %v", err)
+	}
+	if uuid != "test-uuid-1" {
+		t.Errorf("Expected UUID test-uuid-1 for case-insensitive match, got %s", uuid)
+	}
+
 	// Test finding non-existent Nomi
-	_, err = findNomiByName("NonExistent")
+	_, err = client.FindNomiByName("NonExistent")
 	if err == nil {
 		t.Error("Expected error for non-existent Nomi, got none")
 	}

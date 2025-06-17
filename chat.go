@@ -1,13 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"net/http"
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -54,47 +51,6 @@ func clearScreen() {
 	}
 }
 
-// findNomiByName retrieves the UUID of a Nomi by its name.
-func findNomiByName(name string) (string, error) {
-	client := &http.Client{}
-	url := fmt.Sprintf("%s/nomis", baseURL) // Use dynamic baseURL
-
-	// Fetch the list of Nomis
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return "", fmt.Errorf("error creating request: %v", err)
-	}
-	req.Header.Set("Authorization", "Bearer "+apiKey)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", fmt.Errorf("error making request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("error fetching Nomis: %s", resp.Status)
-	}
-
-	var result struct {
-		Nomis []struct {
-			UUID string `json:"uuid"`
-			Name string `json:"name"`
-		} `json:"nomis"`
-	}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return "", fmt.Errorf("error decoding response: %v", err)
-	}
-
-	// Search for the Nomi by name
-	for _, nomi := range result.Nomis {
-		if strings.EqualFold(nomi.Name, name) { // Case-insensitive comparison
-			return nomi.UUID, nil
-		}
-	}
-
-	return "", fmt.Errorf("no Nomi found with the name: %s", name)
-}
 
 // spinner displays a spinning wheel animation while waiting for a response.
 func spinner(stopChan chan bool) {
