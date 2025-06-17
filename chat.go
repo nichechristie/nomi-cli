@@ -5,7 +5,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -52,22 +51,6 @@ func clearScreen() {
 	}
 }
 
-// findNomiByName retrieves the UUID of a Nomi by its name using case-insensitive comparison.
-func findNomiByName(name string) (string, error) {
-	nomis, err := client.GetNomis()
-	if err != nil {
-		return "", err
-	}
-
-	// Search for the Nomi by name (case-insensitive)
-	for _, nomi := range nomis {
-		if strings.EqualFold(nomi.Name, name) {
-			return nomi.UUID, nil
-		}
-	}
-
-	return "", fmt.Errorf("no Nomi found with the name: %s", name)
-}
 
 // spinner displays a spinning wheel animation while waiting for a response.
 func spinner(stopChan chan bool) {

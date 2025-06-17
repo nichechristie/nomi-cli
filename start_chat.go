@@ -14,7 +14,7 @@ func startChat(name string) {
 	defer clearScreen()
 
 	// Find the UUID for the given name
-	nomiID, err := findNomiByName(name)
+	nomiID, err := client.FindNomiByName(name)
 	if err != nil {
 		fmt.Println(err)
 		return

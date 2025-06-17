@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 	"time"
 )
 
@@ -140,7 +141,7 @@ func (c *NomiClient) FindNomiByName(name string) (string, error) {
 	}
 
 	for _, nomi := range nomis {
-		if nomi.Name == name {
+		if strings.EqualFold(nomi.Name, name) {
 			return nomi.UUID, nil
 		}
 	}
